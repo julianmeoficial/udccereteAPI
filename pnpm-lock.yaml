@@ -71,6 +71,9 @@ importers:
       typesense:
         specifier: ^2.0.3
         version: 2.1.0(@babel/runtime@7.29.7)
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^22.13.0
@@ -155,6 +158,12 @@ importers:
 
   packages/schemas:
     dependencies:
+      '@hono/zod-openapi':
+        specifier: ^0.19.2
+        version: 0.19.10(hono@4.13.4)(zod@3.25.76)
+      hono:
+        specifier: ^4.7.4
+        version: 4.13.4
       zod:
         specifier: ^3.24.2
         version: 3.25.76

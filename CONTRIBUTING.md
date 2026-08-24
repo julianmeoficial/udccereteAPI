@@ -53,6 +53,30 @@ chore(deps): bump hono to 4.7
 - Dependencias internas vía `workspace:*`.
 - Scripts en root con Turborepo: `pnpm dev`, `pnpm build`, `pnpm typecheck`.
 
+### API y contratos
+
+- Contratos Zod + OpenAPI viven en `packages/schemas` (`@udccerete/schemas`). Un esquema genera validación, tipos, Swagger y (más adelante) el SDK. No implementar endpoints nuevos sin el esquema correspondiente.
+- La API REST pública se versiona por path: **`/api/v1`**. Cambios rompientes abren `/api/v2`; no se altera v1 publicada.
+- Arranque local de la API (tras `cp .env.example .env` y `pnpm install`):
+
+```bash
+pnpm --filter @udccerete/api dev
+```
+
+Por defecto escucha en `http://localhost:3001`.
+
+| Recurso        | URL                  |
+| -------------- | -------------------- |
+| Health (probe) | `GET /health`        |
+| Health v1      | `GET /api/v1/health` |
+| Metadatos      | `GET /api/v1/meta`   |
+| OpenAPI JSON   | `GET /doc`           |
+| Swagger UI     | `GET /ui`            |
+
+- Errores: formato único `{ error: { code, message, details?, requestId, timestamp } }` definido en `ApiErrorSchema`. El middleware de errores y la validación Zod usan el mismo shape; `x-request-id` se propaga (se genera un UUID si no llega).
+- Rate limit actual: en memoria, por proceso. En producción irá detrás de un gateway y/o Redis (`REDIS_URL`).
+- CORS se configura con `CORS_ORIGIN` (lista separada por comas). El default de desarrollo permite localhost, no `*`.
+
 ## Estructura de PR
 
 - **Qué** cambia y **por qué**.
