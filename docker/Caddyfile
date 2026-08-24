@@ -1,0 +1,6 @@
+# Caddy — proxy reverso con HTTPS automático (producción en VPS Hetzner).
+# Configuración completa se definirá en la fase de despliegue.
+
+# api.udccerete.example.com {
+#   reverse_proxy api:3001
+# }

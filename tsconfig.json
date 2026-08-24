@@ -1,0 +1,13 @@
+{
+  "extends": "@udccerete/tsconfig/base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [],
+  "references": [
+    { "path": "apps/api" },
+    { "path": "apps/worker" },
+    { "path": "packages/db" },
+    { "path": "packages/schemas" }
+  ]
+}

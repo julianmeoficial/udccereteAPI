@@ -1,0 +1,15 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  placeholder:
+    name: Scaffold — CI pendiente de implementación
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fase 0
+        run: echo "CI (lint, typecheck, tests RLS) se activará en fases posteriores."

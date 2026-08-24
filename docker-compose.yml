@@ -1,0 +1,54 @@
+# Infraestructura local para desarrollo y plan B de portabilidad.
+# Los servicios api y worker se añadirán en la fase de implementación.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: udccerete-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: udccerete
+      POSTGRES_PASSWORD: udccerete
+      POSTGRES_DB: udccerete
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U udccerete -d udccerete']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: udccerete-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  typesense:
+    image: typesense/typesense:27.1
+    container_name: udccerete-typesense
+    restart: unless-stopped
+    environment:
+      TYPESENSE_DATA_DIR: /data
+      TYPESENSE_API_KEY: dev-typesense-key
+      TYPESENSE_ENABLE_CORS: 'true'
+    ports:
+      - '8108:8108'
+    volumes:
+      - typesense_data:/data
+    command: '--data-dir /data --api-key=dev-typesense-key --enable-cors'
+
+volumes:
+  postgres_data:
+  redis_data:
+  typesense_data:
