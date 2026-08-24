@@ -1,5 +1,6 @@
 import { createRoute, type OpenAPIHono } from '@hono/zod-openapi';
 import { HealthResponseSchema } from '@udccerete/schemas';
+import { ok } from '../lib/envelope.js';
 import type { AppBindings } from '../types.js';
 
 const rootHealthRoute = createRoute({
@@ -21,5 +22,5 @@ const rootHealthRoute = createRoute({
 });
 
 export function registerRootHealth(app: OpenAPIHono<AppBindings>) {
-  app.openapi(rootHealthRoute, (c) => c.json({ status: 'ok' as const }, 200));
+  app.openapi(rootHealthRoute, (c) => ok(c, { status: 'ok' as const }));
 }

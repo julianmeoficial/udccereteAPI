@@ -1,4 +1,5 @@
 import { z } from '@hono/zod-openapi';
+import { ResponseMetaSchema } from './response.schema.js';
 
 export const API_ERROR_CODES = [
   'VALIDATION_ERROR',
@@ -47,18 +48,11 @@ export const ApiErrorBodySchema = z
     code: ApiErrorCodeSchema,
     message: z.string().openapi({
       description: 'Mensaje legible para el cliente',
-      example: 'El cuerpo de la petición no es válido',
+      example: 'Los datos enviados no son válidos.',
     }),
-    details: z.array(ApiErrorDetailSchema).optional().openapi({
-      description: 'Detalle por campo cuando el error es de validación',
-    }),
-    requestId: z.string().uuid().openapi({
-      description: 'Identificador de trazabilidad (header x-request-id)',
-      example: '550e8400-e29b-41d4-a716-446655440000',
-    }),
-    timestamp: z.string().datetime({ offset: true }).openapi({
-      description: 'Momento del error en ISO 8601',
-      example: '2026-08-24T22:52:00.000Z',
+    details: z.array(ApiErrorDetailSchema).openapi({
+      description: 'Detalle por campo cuando el error es de validación; vacío en el resto',
+      example: [],
     }),
   })
   .openapi('ApiErrorBody');
@@ -66,6 +60,7 @@ export const ApiErrorBodySchema = z
 export const ApiErrorSchema = z
   .object({
     error: ApiErrorBodySchema,
+    meta: ResponseMetaSchema,
   })
   .openapi('ApiError');
 

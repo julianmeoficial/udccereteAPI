@@ -73,7 +73,7 @@ Por defecto escucha en `http://localhost:3001`.
 | OpenAPI JSON   | `GET /doc`           |
 | Swagger UI     | `GET /ui`            |
 
-- Errores: formato único `{ error: { code, message, details?, requestId, timestamp } }` definido en `ApiErrorSchema`. El middleware de errores y la validación Zod usan el mismo shape; `x-request-id` se propaga (se genera un UUID si no llega).
+- Sobre transversal: éxito `{ data, meta }` y error `{ error: { code, message, details }, meta }`. `meta` siempre lleva `requestId` y `timestamp`. En listados, `pagination` va dentro de `meta`. Esquemas: `SuccessResponseSchema`, `ApiErrorSchema`. El middleware de errores y la validación Zod usan el mismo shape; `x-request-id` se reutiliza o se genera un UUID.
 - Rate limit actual: en memoria, por proceso. En producción irá detrás de un gateway y/o Redis (`REDIS_URL`).
 - CORS se configura con `CORS_ORIGIN` (lista separada por comas). El default de desarrollo permite localhost, no `*`.
 

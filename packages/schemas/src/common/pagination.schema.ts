@@ -1,4 +1,5 @@
 import { z } from '@hono/zod-openapi';
+import { ResponseMetaSchema } from './response.schema.js';
 
 export const PaginationQuerySchema = z
   .object({
@@ -39,9 +40,15 @@ export const PaginationMetaSchema = z
 
 export type PaginationMeta = z.infer<typeof PaginationMetaSchema>;
 
+export const PaginatedMetaSchema = ResponseMetaSchema.extend({
+  pagination: PaginationMetaSchema,
+}).openapi('PaginatedMeta');
+
+export type PaginatedMeta = z.infer<typeof PaginatedMetaSchema>;
+
 /**
- * Fábrica de respuestas paginadas. Un único esquema Zod alimenta validación,
- * tipos, Swagger y (más adelante) el SDK.
+ * Respuesta paginada en el sobre transversal `{ data, meta }`.
+ * `meta` incluye requestId, timestamp y pagination.
  */
 export function PaginatedResponseSchema<T extends z.ZodTypeAny>(
   itemSchema: T,
@@ -50,12 +57,12 @@ export function PaginatedResponseSchema<T extends z.ZodTypeAny>(
   return z
     .object({
       data: z.array(itemSchema),
-      pagination: PaginationMetaSchema,
+      meta: PaginatedMetaSchema,
     })
     .openapi(name);
 }
 
 export type PaginatedResponse<T> = {
   data: T[];
-  pagination: PaginationMeta;
+  meta: PaginatedMeta;
 };

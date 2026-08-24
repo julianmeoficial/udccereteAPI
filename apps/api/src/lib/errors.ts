@@ -3,9 +3,9 @@ import { API_ERROR_STATUS } from '@udccerete/schemas';
 
 export class AppError extends Error {
   readonly code: ApiErrorCode;
-  readonly details: ApiErrorDetail[] | undefined;
+  readonly details: ApiErrorDetail[];
 
-  constructor(code: ApiErrorCode, message: string, details?: ApiErrorDetail[]) {
+  constructor(code: ApiErrorCode, message: string, details: ApiErrorDetail[] = []) {
     super(message);
     this.name = 'AppError';
     this.code = code;
@@ -50,7 +50,9 @@ export function toApiError(input: {
     error: {
       code: input.code,
       message: input.message,
-      ...(input.details && input.details.length > 0 ? { details: input.details } : {}),
+      details: input.details ?? [],
+    },
+    meta: {
       requestId: input.requestId,
       timestamp: new Date().toISOString(),
     },

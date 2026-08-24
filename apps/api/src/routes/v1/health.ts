@@ -1,5 +1,7 @@
 import { createRoute, type OpenAPIHono } from '@hono/zod-openapi';
 import { HealthResponseSchema } from '@udccerete/schemas';
+import { ok } from '../../lib/envelope.js';
+import { apiErrorJson } from '../../lib/openapi-responses.js';
 import type { AppBindings } from '../../types.js';
 
 const healthRoute = createRoute({
@@ -17,9 +19,13 @@ const healthRoute = createRoute({
         },
       },
     },
+    429: {
+      description: 'Demasiadas peticiones',
+      content: apiErrorJson,
+    },
   },
 });
 
 export function registerHealthRoutes(app: OpenAPIHono<AppBindings>) {
-  app.openapi(healthRoute, (c) => c.json({ status: 'ok' as const }, 200));
+  app.openapi(healthRoute, (c) => ok(c, { status: 'ok' as const }));
 }

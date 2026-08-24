@@ -18,6 +18,10 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - API Hono inicial (`@udccerete/api`): `GET /health`, `GET /api/v1/health`, `GET /api/v1/meta`, middlewares (request id, CORS, logger, rate limit en memoria, errores) y Swagger UI en `/ui` (spec en `/doc`).
 - Variables `CORS_ORIGIN`, `RATE_LIMIT_WINDOW_MS` y `RATE_LIMIT_MAX` en `.env.example`.
 
+### Changed
+
+- Sobre JSON transversal en toda la API: éxito `{ data, meta }` y error `{ error: { code, message, details }, meta }`. `requestId` y `timestamp` viven solo en `meta`; `details` es siempre un array (vacío si no hay validación).
+
 ## [0.0.0] - 2026-08-24
 
 Versión inicial de scaffolding. Sin API desplegable.

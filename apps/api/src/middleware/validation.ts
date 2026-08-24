@@ -17,7 +17,7 @@ export const validationHook: NonNullable<OpenAPIHonoOptions<AppBindings>['defaul
   return c.json(
     toApiError({
       code: 'VALIDATION_ERROR',
-      message: 'El cuerpo de la petición no es válido',
+      message: 'Los datos enviados no son válidos.',
       requestId,
       details: result.error.issues.map((issue) => ({
         path: issue.path.length > 0 ? issue.path.join('.') : '(root)',

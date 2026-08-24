@@ -1,6 +1,8 @@
 import { createRoute, type OpenAPIHono } from '@hono/zod-openapi';
 import { MetaResponseSchema } from '@udccerete/schemas';
 import { API_NAME, apiVersion, env } from '../../env.js';
+import { ok } from '../../lib/envelope.js';
+import { apiErrorJson } from '../../lib/openapi-responses.js';
 import type { AppBindings } from '../../types.js';
 
 const metaRoute = createRoute({
@@ -18,19 +20,20 @@ const metaRoute = createRoute({
         },
       },
     },
+    429: {
+      description: 'Demasiadas peticiones',
+      content: apiErrorJson,
+    },
   },
 });
 
 export function registerMetaRoutes(app: OpenAPIHono<AppBindings>) {
   app.openapi(metaRoute, (c) =>
-    c.json(
-      {
-        name: API_NAME,
-        version: apiVersion,
-        environment: env.NODE_ENV,
-        status: 'ok' as const,
-      },
-      200,
-    ),
+    ok(c, {
+      name: API_NAME,
+      version: apiVersion,
+      environment: env.NODE_ENV,
+      status: 'ok' as const,
+    }),
   );
 }

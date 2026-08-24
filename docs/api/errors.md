@@ -2,25 +2,39 @@
 
 ## Principio
 
-Un **formato único de error** generado desde el esquema Zod, consistente en REST y tRPC.
+Un **formato único** para toda la API: éxito y error comparten `meta` (`requestId`, `timestamp`). El cuerpo de error solo lleva `code`, `message` y `details`.
 
-## Estructura propuesta
+## Respuesta exitosa
+
+```json
+{
+  "data": {},
+  "meta": {
+    "requestId": "req_123",
+    "timestamp": "2026-08-24T22:45:00.000Z"
+  }
+}
+```
+
+Las listas paginadas añaden `pagination` dentro de `meta`.
+
+## Error
 
 ```json
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "El cuerpo de la petición no es válido",
-    "details": [
-      {
-        "path": "email",
-        "message": "Correo institucional requerido"
-      }
-    ],
-    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+    "message": "Los datos enviados no son válidos.",
+    "details": []
+  },
+  "meta": {
+    "requestId": "req_123",
+    "timestamp": "2026-08-24T22:45:00.000Z"
   }
 }
 ```
+
+`details` siempre está presente: lista de `{ path, message }` en validación, vacía en el resto.
 
 ## Códigos de error (catálogo inicial)
 
@@ -42,11 +56,11 @@ Cuando Typesense o IA no responden:
 - Incluir `warning` en la respuesta o header `X-Service-Status`.
 - Contenido estático disponible sigue sirviendo.
 
-## Implementación (fase posterior)
+## Implementación
 
-- Esquema Zod en `packages/schemas`.
-- Helper en `apps/api` para mapear excepciones → formato uniforme.
-- Sentry captura `INTERNAL_ERROR` con `requestId`.
+- Esquemas en `packages/schemas` (`ApiErrorSchema`, `SuccessResponseSchema`, `ResponseMetaSchema`).
+- Helpers `ok` / `toApiError` en `apps/api`.
+- Sentry captura `INTERNAL_ERROR` con `requestId` (fase posterior).
 
 ## Referencias
 
