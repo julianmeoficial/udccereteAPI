@@ -82,7 +82,7 @@ docker/         # Caddy, Dockerfiles
 
 ## Licencia
 
-Software propietario de la Universidad de Cundinamarca. Ver [LICENSE](LICENSE).
+Software propietario de la Universidad de Cartagena (Centro Tutorial Cereté). Ver [LICENSE](LICENSE).
 
 ## Contribuir
 
