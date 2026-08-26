@@ -17,10 +17,12 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Contratos Zod + OpenAPI en `@udccerete/schemas` (`packages/schemas`): error, paginación, params, roles, archivos y respuestas estándar.
 - API Hono inicial (`@udccerete/api`): `GET /health`, `GET /api/v1/health`, `GET /api/v1/meta`, middlewares (request id, CORS, logger, rate limit en memoria, errores) y Swagger UI en `/ui` (spec en `/doc`).
 - Variables `CORS_ORIGIN`, `RATE_LIMIT_WINDOW_MS` y `RATE_LIMIT_MAX` en `.env.example`.
+- Índice de documentación (`docs/README.md`), referencia de endpoints, guía de CI/despliegue, índice y plantilla de ADR.
 
 ### Changed
 
 - Sobre JSON transversal en toda la API: éxito `{ data, meta }` y error `{ error: { code, message, details }, meta }`. `requestId` y `timestamp` viven solo en `meta`; `details` es siempre un array (vacío si no hay validación).
+- Documentación alineada con el código: se distingue implementado (API Hono) de diseño o stub (auth, workers, DB, CI, Docker de producción). Titularidad del README alineada con `LICENSE` (Universidad de Cundinamarca).
 
 ## [0.0.0] - 2026-08-24
 

@@ -1,8 +1,12 @@
 # Desarrollo local
 
+**Estado:** vigente · **Actualizado:** 2026-08-25
+
 ## Requisitos
 
-- Node.js 24, pnpm 9, Docker (opcional)
+- Node.js **24** (`.nvmrc`; `nvm use`)
+- pnpm **9** (`packageManager`: `pnpm@9.15.0`; `corepack enable`)
+- Docker (recomendado: Postgres, Redis, Typesense)
 
 ## Configuración
 
@@ -12,7 +16,7 @@ pnpm install
 cp .env.example .env
 ```
 
-Editar `.env` con valores locales. Para desarrollo sin Supabase cloud, usar Postgres del `docker-compose`.
+Editar `.env`. Para Postgres sin Supabase cloud, usar el servicio del Compose.
 
 ## Infra local con Docker
 
@@ -20,49 +24,63 @@ Editar `.env` con valores locales. Para desarrollo sin Supabase cloud, usar Post
 docker compose up -d
 ```
 
-Servicios:
-
 | Servicio | Puerto | Uso |
 |----------|--------|-----|
-| Postgres 17 | 5432 | `DATABASE_URL` local |
-| Redis 7 | 6379 | Caché, rate limit, BullMQ |
-| Typesense | 8108 | Búsqueda (`dev-typesense-key` en compose) |
+| Postgres 17 | 5432 | `DATABASE_URL` local (la API **aún no** abre conexión) |
+| Redis 7 | 6379 | Previsto para caché, rate limit y BullMQ |
+| Typesense 27.1 | 8108 | Búsqueda (`dev-typesense-key` en Compose) |
+
+Compose **no** incluye los contenedores `api` ni `worker`. La API se corre con pnpm.
+
+## Arrancar la API
+
+```bash
+pnpm --filter @udccerete/api dev
+```
+
+Por defecto escucha en `http://localhost:3001` (`PORT`). Equivalente desde la raíz: `pnpm dev` (Turbo en todos los `dev`; el worker no hace trabajo útil).
+
+| Recurso | URL |
+|---------|-----|
+| Health (sonda) | `GET /health` |
+| Health v1 | `GET /api/v1/health` |
+| Metadatos | `GET /api/v1/meta` |
+| OpenAPI JSON | `GET /doc` |
+| Swagger UI | `GET /ui` |
+
+Detalle: [Referencia de la API](../api/README.md).
 
 ## Variables clave
 
-Ver [.env.example](../../.env.example) completo.
+Ver [.env.example](../../.env.example). La API **solo exige** (con defaults) `NODE_ENV`, `PORT`, `LOG_LEVEL`, `CORS_ORIGIN`, `RATE_LIMIT_WINDOW_MS` y `RATE_LIMIT_MAX`. El resto es para fases posteriores.
 
 | Variable | Desarrollo local |
 |----------|------------------|
+| `PORT` | `3001` |
+| `CORS_ORIGIN` | `http://localhost:3000,http://localhost:5173` |
 | `DATABASE_URL` | `postgresql://udccerete:udccerete@localhost:5432/udccerete` |
 | `REDIS_URL` | `redis://localhost:6379` |
-| `TYPESENSE_HOST` | `localhost` |
-| `TYPESENSE_API_KEY` | `dev-typesense-key` (compose) |
-| `SUPABASE_*` | Proyecto Supabase de desarrollo |
+| `TYPESENSE_HOST` / `TYPESENSE_API_KEY` | `localhost` / `dev-typesense-key` |
+| `SUPABASE_*` | Proyecto Supabase de desarrollo (cuando exista auth) |
 
-## Scripts (root)
+## Scripts (raíz)
 
 ```bash
-pnpm typecheck   # TypeScript en todos los workspaces
+pnpm typecheck   # TypeScript en los workspaces
 pnpm lint        # ESLint
+pnpm format:check
 pnpm build       # Compila packages y apps
-pnpm dev         # Turbo dev (servidor en fase posterior)
+pnpm dev         # Turbo dev (API + worker stub)
 ```
 
-## Producción (referencia)
+Drizzle (cuando haya esquemas): `pnpm --filter @udccerete/db db:generate` / `db:migrate` / `db:studio`.
 
-| Entorno | API / workers | DB / Auth | Archivos |
-|---------|---------------|-----------|----------|
-| Producción | VPS Hetzner + Docker + Caddy | Supabase | Cloudflare R2 |
-| CI | GitHub Actions | Migraciones Drizzle en PR | — |
+## Producción
 
-La API **no se despliega en Vercel**; requiere proceso persistente para workers.
-
-## Portabilidad (plan B)
-
-Todo el backend se describe en `docker-compose.yml`. Restaurar Postgres desde volcado y `docker compose up` en otro proveedor en ≤ 4 horas (RNF-POR-001).
+Ver [Despliegue](deploy.md). Resumen: VPS Hetzner + Docker + Caddy; DB/Auth en Supabase; archivos en R2. La API no se despliega en Vercel.
 
 ## Referencias
 
+- [CI](ci.md)
 - [ADR 0001](../adr/0001-stack-backend.md)
 - [README](../../README.md)

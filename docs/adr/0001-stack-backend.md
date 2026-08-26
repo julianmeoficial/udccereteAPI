@@ -2,11 +2,12 @@
 
 - **Estado:** Aceptado
 - **Fecha:** 2026-08-24
-- **Contexto:** Propuesta técnica v4 — Blog UDEC Cereté
+- **Decisores:** equipo backend
+- **Cumplimiento:** parcial (API Hono y contratos comunes en código; workers, DB, auth y deploy pendientes)
 
 ## Contexto
 
-El backend debe soportar web, Expo (iOS/Android) y app HUAWEI con un solo contrato, techo de 2 000 usuarios/mes, costo predecible y portabilidad ante cambio de proveedor. El equipo es pequeño y rotativo; se prioriza TypeScript end-to-end y operación simple.
+El backend debe soportar web, Expo (iOS/Android) y app HUAWEI con un solo contrato, techo de 2 000 usuarios/mes, costo predecible y portabilidad ante cambio de proveedor. El equipo es pequeño y rotativo; se prioriza TypeScript de punta a punta y operación simple. Propuesta técnica v4 — Blog UDEC Cereté.
 
 ## Decisión
 
@@ -78,11 +79,12 @@ El backend debe soportar web, Expo (iOS/Android) y app HUAWEI con un solo contra
 
 ### Negativas
 
-- VPS como punto único de fallo (mitigado con backups y compose reproducible).
+- VPS como punto único de fallo (mitigado con backups y Compose reproducible).
 - Administración del VPS (mitigado con Caddy, parches y Actions).
-- Payload CMS pendiente de integración sin arrastrar Next.js en Fase 0.
+- Payload CMS pendiente de integración sin arrastrar Next.js en las fases iniciales.
 
 ## Referencias
 
 - [Notion — API UDEC Cereté](https://app.notion.com/p/3c68b2d8659c809fa107d5347729b850)
 - [Visión general](../architecture/overview.md)
+- [Índice ADR](./README.md)

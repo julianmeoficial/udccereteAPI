@@ -1,14 +1,20 @@
 # Trabajo asíncrono
 
-## Redis + BullMQ
+**Estado:** diseño · **Actualizado:** 2026-08-25
 
-Redis en el VPS cumple tres funciones:
+Redis y BullMQ forman parte del [stack cerrado](../adr/0001-stack-backend.md). **No hay workers en ejecución:** `apps/worker/src/index.ts` es un stub. Redis sí se puede levantar en local vía Compose; la API **no lo usa** (el rate limit actual es en memoria).
+
+## Redis (producción)
+
+Redis en el VPS cubrirá tres funciones:
 
 1. **Caché** — respuestas frecuentes, degradación elegante.
-2. **Rate limiting** — por usuario e por IP; cuotas especiales para endpoints de IA.
+2. **Rate limiting** — por usuario e IP; cuotas especiales para endpoints de IA.
 3. **Respaldo de colas** — BullMQ para trabajo en segundo plano.
 
 ## Workers (`apps/worker`)
+
+Paquete `@udccerete/worker` (BullMQ + ioredis + Sentry en dependencias). Colas previstas:
 
 | Cola / tarea | Destino | Descripción |
 |--------------|---------|-------------|
@@ -17,27 +23,30 @@ Redis en el VPS cumple tres funciones:
 | Sync Notion | PostgreSQL | Sincronización documental |
 | Push | FCM / APNs / HMS | Notificaciones móviles |
 
-## Flujo
+## Flujo previsto
 
 ```
 API Hono → encola job → Redis/BullMQ → Worker → Typesense | Resend | DB | Push
 Cron programado → Redis/BullMQ → Worker
 ```
 
-## Degradación
+## Degradación (diseño)
 
 - Si Typesense no responde: la API devuelve contenido estático disponible + aviso.
-- Si Perplexity Sonar agota tope mensual: degradar a búsqueda Typesense.
+- Si Perplexity Sonar agota el tope mensual: degradar a búsqueda Typesense.
 - Caché Redis 24 h por consulta normalizada de IA; máx. 10 consultas/usuario/día.
+
+El código de error `SERVICE_DEGRADED` ya existe en el catálogo (HTTP 503). Ver [Errores](../api/errors.md).
 
 ## Desarrollo local
 
 ```bash
 docker compose up -d redis
-# Worker: pnpm --filter @udccerete/worker dev  (fase posterior)
+# Cuando existan procesadores:
+# pnpm --filter @udccerete/worker dev
 ```
 
-Variables: `REDIS_URL` en `.env`.
+Variable: `REDIS_URL` en `.env` (ver `.env.example`). Hoy no es requerida para arrancar la API.
 
 ## Referencias
 

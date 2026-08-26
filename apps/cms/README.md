@@ -1,7 +1,7 @@
 # Payload CMS — Placeholder
 
-Este directorio reservará la capa editorial (Payload CMS) sobre el mismo PostgreSQL de Supabase.
+Este directorio reserva la capa editorial (Payload CMS) sobre el mismo PostgreSQL de Supabase.
 
-**No se instala en Fase 0** para evitar arrastrar dependencias de Next.js antes de tener la API base.
+**No está instalado.** Se evita arrastrar Next.js antes de tener API, contratos y esquemas de base estables.
 
-La integración se planificará cuando existan contratos de API y esquemas de base de datos.
+Cuando se integre, documentar el arranque en [docs/operations/local.md](../../docs/operations/local.md) y el rol del CMS en [docs/architecture/overview.md](../../docs/architecture/overview.md).

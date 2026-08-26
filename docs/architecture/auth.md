@@ -1,14 +1,20 @@
 # Autenticación y autorización
 
+**Estado:** diseño · **Actualizado:** 2026-08-25
+
+Este documento describe el **flujo de producto** acordado. La API **no valida JWT todavía**: no hay middleware de sesión, ni uso de `jose` contra JWKS, ni políticas RLS. El paquete `@supabase/supabase-js` y `jose` están en dependencias de `@udccerete/api`; `SUPABASE_*` figura en `.env.example`.
+
+Contratos Zod de auth: `packages/schemas/src/auth/` (módulo reservado, vacío).
+
 ## Flujo de acceso (Magic Link + OTP)
 
 1. El usuario escribe su correo institucional (`@ucundinamarca.edu.co`).
-2. Supabase Auth solicita envío vía **Resend** (SPF/DKIM/DMARC propios).
+2. Supabase Auth solicita el envío vía **Resend** (SPF/DKIM/DMARC propios).
 3. El usuario recibe Magic Link y OTP de 6 dígitos en la misma pantalla.
 4. Al abrir el enlace o enviar el OTP, Supabase emite JWT (1 h) + refresh token rotatorio.
 5. El cliente envía `Authorization: Bearer <JWT>` a la API.
-6. Hono valida la firma con la **clave pública / JWKS** de Supabase (sin consultar la DB).
-7. Las consultas a PostgreSQL aplican **RLS** según el rol del usuario.
+6. Hono validará la firma con la **clave pública / JWKS** de Supabase (sin consultar la DB).
+7. Las consultas a PostgreSQL aplicarán **RLS** según el rol del usuario.
 
 ## Salvaguardas
 
@@ -20,24 +26,28 @@
 
 ## Roles
 
-| Rol | Alcance |
-|-----|---------|
-| SuperAdmin | Sistema completo |
-| Admin de centro | Su centro tutorial |
-| Editor / Blogger | Contenido asignado |
-| Docente | Recursos y perfil |
-| Estudiante / Visitante | Lectura y participación limitada |
+Valores de contrato (`RoleSchema` en `@udccerete/schemas`):
 
-La autorización efectiva se implementa en **RLS** (PostgreSQL), no solo en la capa de aplicación.
+| Rol API | Alcance previsto |
+|---------|------------------|
+| `super_admin` | Sistema completo |
+| `admin` | Su centro tutorial |
+| `editor` | Contenido asignado (editor / blogger) |
+| `teacher` | Recursos y perfil (docente) |
+| `student` | Lectura y participación limitada |
+| `visitor` | Lectura y participación limitada |
 
-## Implementación en la API (fases posteriores)
+La autorización efectiva se implementará en **RLS** (PostgreSQL), no solo en la capa de aplicación. No usar `user_metadata` del JWT para autorizar; usar `app_metadata`.
+
+## Implementación prevista en la API
 
 - Validación JWT con `jose` contra `SUPABASE_JWT_JWKS_URL`.
-- Middleware Hono que extrae `sub`, rol y centro del token.
-- Nunca confiar en `user_metadata` para decisiones de autorización.
+- Middleware Hono que extraiga `sub`, rol y centro del token.
 - Service role key solo en workers; nunca en clientes ni en la API pública.
+- Header `Authorization` ya está permitido en CORS.
 
 ## Referencias
 
 - [Visión general](./overview.md)
+- [Referencia de la API](../api/README.md)
 - [ADR 0001](../adr/0001-stack-backend.md)
