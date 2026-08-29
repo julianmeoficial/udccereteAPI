@@ -18,7 +18,7 @@
 
 ## Degradación
 
-Cuando Typesense, R2 o la IA no respondan, la API intenta fallback (p. ej. búsqueda SQL) o responde `SERVICE_DEGRADED` con mensaje claro — nunca un 500 opaco al cliente.
+Cuando Typesense, R2 o la IA no respondan, la API intenta una alternativa (por ejemplo, búsqueda SQL) o responde `SERVICE_DEGRADED` con un mensaje claro; nunca un 500 opaco al cliente.
 
 ## Referencias
 

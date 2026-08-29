@@ -19,14 +19,14 @@
 | RD-005 | `calendar_activities` | Calendario académico | Histórico 5 años |
 | RD-006 | `events`, `event_registrations` | Eventos e inscripciones | 1 año post-evento |
 | RD-007 | `resources`, `resource_versions` | Recursos académicos (R2) | Curso vigente + 2 años |
-| RD-008 | `notification_subscriptions`, `notifications` | Push, correo, inbox | Hasta revocación / 12 meses inactivo |
+| RD-008 | `notification_subscriptions`, `notifications` | Push, correo, bandeja de entrada | Hasta revocación o 12 meses de inactividad |
 | RD-009 | `analytics_events` | Analítica anonimizada | 14 meses |
 | RD-010 | `wellbeing_routes` | Rutas de atención | Vigente por semestre |
 | RD-011 | `audit_log` | Auditoría de acciones | 1 año |
 
 Catálogo académico: `centers`, `programs`, `courses`, `tutors`.
 
-Engagement: `saved_posts`, `read_receipts`, `calendar_feed_tokens`, `search_zero_results`.
+Participación del usuario: `saved_posts`, `read_receipts`, `calendar_feed_tokens`, `search_zero_results`.
 
 ## Roles (`profiles.role`)
 

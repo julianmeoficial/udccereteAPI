@@ -2,7 +2,7 @@
 
 Backend **API-first** del Blog UDEC Cereté (Centro Tutorial Cereté, Universidad de Cartagena). Fuente única de verdad para la web pública (Next.js), Expo iOS/Android y la app nativa HUAWEI.
 
-La API Hono responde en local con dominio v1 completo, OpenAPI en `/doc` y migraciones Drizzle listas. El siguiente paso es [crear el proyecto Supabase](docs/operations/supabase.md) y conectar credenciales.
+La API Hono responde en local con el dominio v1 completo, OpenAPI en `/doc` y migraciones Drizzle listas. El siguiente paso es [crear el proyecto en Supabase](docs/operations/supabase.md) y conectar las credenciales.
 
 Documentación del repo: **[docs/README.md](docs/README.md)**. Spec de producto: [API UDEC Cereté en Notion](https://app.notion.com/p/3c68b2d8659c809fa107d5347729b850).
 
@@ -39,28 +39,28 @@ docker compose up -d          # opcional
 pnpm --filter @udccerete/api dev
 ```
 
-La API queda en `http://localhost:3001`. Health: `/health`. Swagger: `/ui`. Guía completa: [docs/operations/local.md](docs/operations/local.md).
+La API queda en `http://localhost:3001`. Salud: `/health`. Swagger: `/ui`. Guía completa: [docs/operations/local.md](docs/operations/local.md).
 
 ## Estructura del repositorio
 
 ```
 apps/
   api/          # Hono 4 — API v1 (servidor activo)
-  worker/       # BullMQ (stub)
-  cms/          # Placeholder Payload CMS
+  worker/       # BullMQ — colas y procesadores
+  cms/          # Reservado para Payload CMS
 packages/
-  db/           # Drizzle (sin esquemas aún)
+  db/           # Drizzle — esquemas, migraciones y SQL de Supabase
   schemas/      # Zod / OpenAPI
   tsconfig/     # TypeScript compartido
 docs/           # Arquitectura, API, operaciones, ADR
-docker/         # Caddy y Dockerfile (stubs de producción)
+docker/         # Caddy y Dockerfile (esqueletos de producción)
 ```
 
 ## Principios
 
 1. **API-first** — La API v1 se diseña antes que cualquier cliente.
 2. **Contrato único** — Un esquema Zod genera validación, tipos y Swagger.
-3. **Seguridad en la base** — RLS en PostgreSQL (cuando existan tablas).
+3. **Seguridad en la base** — RLS en PostgreSQL; políticas en `packages/db/supabase/rls.sql`.
 4. **Sin estado en la API** — JWT sin consultar la base; trabajo diferido en colas.
 5. **Portabilidad** — Compose reproducible; la API no vive en Vercel.
 

@@ -31,13 +31,13 @@ pnpm --filter @udccerete/worker dev
 
 | Recurso | URL |
 |---------|-----|
-| Health | `GET /health`, `GET /api/v1/health` |
+| Salud | `GET /health`, `GET /api/v1/health` |
 | Swagger | `GET /ui` |
 | RSS | `GET /feed.xml` |
 
 ## Auth en desarrollo
 
-Sin `SUPABASE_JWT_JWKS_URL`, la API acepta JWT sin verificar firma (solo `NODE_ENV !== production`). Genera un JWT de prueba con payload:
+Sin `SUPABASE_JWT_JWKS_URL`, la API acepta JWT sin verificar firma (solo si `NODE_ENV !== production`). Genera un JWT de prueba con este payload:
 
 ```json
 {
@@ -47,7 +47,11 @@ Sin `SUPABASE_JWT_JWKS_URL`, la API acepta JWT sin verificar firma (solo `NODE_E
 }
 ```
 
-Codifica header.payload.signature (base64url) para pruebas con `curl -H "Authorization: Bearer ..."`.
+Codifica `header.payload.signature` en base64url para pruebas con:
+
+```bash
+curl -H "Authorization: Bearer <token>" http://localhost:3001/api/v1/me
+```
 
 ## Scripts
 

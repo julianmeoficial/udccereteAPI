@@ -3,7 +3,7 @@
 - **Estado:** Aceptado
 - **Fecha:** 2026-08-24
 - **Decisores:** equipo backend
-- **Cumplimiento:** parcial (API Hono y contratos comunes en código; workers, DB, auth y deploy pendientes)
+- **Cumplimiento:** parcial (dominio v1, auth JWT, Drizzle y workers en código; RLS en cloud y deploy pendientes)
 
 ## Contexto
 

@@ -32,7 +32,7 @@ En la raíz del repo: [README.md](../README.md) (entrada), [CONTRIBUTING.md](../
 
 | Documento | Contenido |
 |-----------|-----------|
-| [Superficie actual](api/README.md) | Endpoints, headers, CORS, rate limit |
+| [Superficie actual](api/README.md) | Endpoints, headers, CORS, límite de peticiones |
 | [Versionado](api/versioning.md) | `/api/v1`, OpenAPI, tRPC/webhooks (planificados) |
 | [Errores](api/errors.md) | Sobre `{ error, meta }`, catálogo de códigos |
 
@@ -41,8 +41,8 @@ En la raíz del repo: [README.md](../README.md) (entrada), [CONTRIBUTING.md](../
 | Documento | Contenido |
 |-----------|-----------|
 | [Desarrollo local](operations/local.md) | Node, pnpm, Docker, migraciones, arranque |
-| [Conectar Supabase](operations/supabase.md) | Checklist cloud |
-| [CI](operations/ci.md) | GitHub Actions (placeholder) |
+| [Conectar Supabase](operations/supabase.md) | Guía para el entorno cloud |
+| [CI](operations/ci.md) | GitHub Actions (marcador de posición) |
 | [Despliegue](operations/deploy.md) | Plan VPS; Docker + Caddy |
 
 ### Decisiones (ADR)

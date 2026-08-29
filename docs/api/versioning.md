@@ -1,12 +1,12 @@
 # Versionado de la API
 
-**Estado:** vigente para REST v1 · **Actualizado:** 2026-08-25
+**Estado:** vigente para REST v1 · **Actualizado:** 2026-08-28
 
 ## Superficies
 
 | Superficie | Uso | Estado | Consumidores |
 |------------|-----|--------|--------------|
-| REST `/api/v1` | Contrato público documentado | Implementado (health, meta) | Web, Expo, Huawei, terceros |
+| REST `/api/v1` | Contrato público documentado | Implementado (dominio v1) | Web, Expo, Huawei, terceros |
 | OpenAPI `/doc` + Swagger `/ui` | Spec generada desde Zod/Hono | Implementado | Humanos y herramientas |
 | tRPC | Interno al monorepo web (mismos validadores) | Pendiente (`@hono/trpc-server` en deps) | Next.js del blog |
 | Webhooks | Eventos firmados | Pendiente | CMS, correo, tiendas de apps |
@@ -15,7 +15,7 @@
 
 - Base path: **`/api/v1`**
 - Documentación viva: OpenAPI 3.1 en `GET /doc`, UI en `GET /ui` (`@hono/zod-openapi`).
-- La **v1 se congela** al publicarse; cambios rompientes abren **`/api/v2`**.
+- La **v1 se congela** al publicarse; los cambios rompientes abren **`/api/v2`**.
 - Ningún cliente tiene endpoints exclusivos.
 
 Lista de rutas: [Referencia de la API](./README.md).
@@ -28,7 +28,7 @@ El monorepo usa `0.0.x` durante el desarrollo inicial (`apps/api/package.json`).
 
 ```
 Accept: application/json
-Authorization: Bearer <jwt>    # reservado; auth no implementada
+Authorization: Bearer <jwt>    # JWT de Supabase Auth
 x-request-id: <uuid>           # opcional; si falta, la API lo genera
 ```
 

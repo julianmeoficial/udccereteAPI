@@ -13,7 +13,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Contratos Zod por módulo: auth, posts, comments, calendar, events, resources, forum, notifications, wellbeing, citations, admin, search, ai.
 - Middleware JWT (`jose` + JWKS), permisos por rol, rutas `/api/v1` Must+Should.
 - Workers BullMQ, colas, adaptadores R2/Typesense/Resend/VAPID con degradación sin env.
-- RSS `GET /feed.xml`, health readiness con checks DB/Redis.
+- RSS `GET /feed.xml`, comprobación de disponibilidad con verificaciones DB/Redis.
 - Docs: `data-model.md`, `operations/supabase.md`, catálogo de endpoints actualizado.
 - Vitest: pruebas de esquemas Zod y matriz de permisos.
 

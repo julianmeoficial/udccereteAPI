@@ -20,11 +20,12 @@ Antes del PR, en local:
 
 ```bash
 pnpm typecheck
+pnpm test
 pnpm lint
 pnpm format:check
 ```
 
-CI en GitHub aún es un placeholder. Ver [docs/operations/ci.md](docs/operations/ci.md).
+CI en GitHub aún es un marcador de posición. Ver [docs/operations/ci.md](docs/operations/ci.md).
 
 ## Convenciones de commits
 
@@ -80,7 +81,7 @@ La guía de cómo está organizado el árbol está en [docs/README.md](docs/READ
 - La API REST pública se versiona por path: **`/api/v1`**. Cambios rompientes abren `/api/v2`; no se altera v1 publicada.
 - Sobre transversal: éxito `{ data, meta }` y error `{ error: { code, message, details }, meta }`. `meta` siempre lleva `requestId` y `timestamp`. En listados, `pagination` va dentro de `meta`.
 - Rate limit actual: en memoria, por proceso, solo en `/api/*`. En producción irá detrás de un gateway y/o Redis (`REDIS_URL`).
-- CORS se configura con `CORS_ORIGIN` (lista separada por comas). El default de desarrollo permite localhost, no `*`.
+- CORS se configura con `CORS_ORIGIN` (lista separada por comas). El valor predeterminado de desarrollo permite localhost; no usar `*`.
 
 Arranque y tabla de URLs: [docs/operations/local.md](docs/operations/local.md) y [docs/api/README.md](docs/api/README.md).
 
@@ -93,7 +94,7 @@ pnpm --filter @udccerete/api dev
 - **Qué** cambia y **por qué**.
 - Enlace a spec Notion o issue si aplica.
 - Docs actualizados si cambia el contrato o el arranque.
-- Checklist de pruebas manual (cuando haya endpoints).
+- Lista de verificación de pruebas manual (cuando haya endpoints).
 - Sin secretos en diffs ni en comentarios.
 
 ## Reportar problemas

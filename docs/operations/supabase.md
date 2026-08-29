@@ -1,6 +1,6 @@
 # Conectar Supabase
 
-Checklist para pasar de desarrollo local a Supabase gestionado. **No commitear secretos.**
+Lista de verificación para pasar de desarrollo local a Supabase gestionado. **No commitear secretos.**
 
 **Actualizado:** 2026-08-28
 
@@ -14,7 +14,7 @@ Checklist para pasar de desarrollo local a Supabase gestionado. **No commitear s
 1. Authentication → Providers → Email: habilitar Magic Link.
 2. Restringir dominio `@unicartagena.edu.co` si aplica.
 3. Configurar SMTP con **Resend** (SPF/DKIM/DMARC del dominio del blog).
-4. JWT expiry: 1 h; refresh rotatorio según [auth](../architecture/auth.md).
+4. Caducidad del JWT: 1 h; refresh rotatorio según [auth](../architecture/auth.md).
 
 ## 3. Variables de entorno
 
@@ -33,7 +33,7 @@ Opcionales (degradación elegante si faltan): `REDIS_URL`, Typesense, R2, `RESEN
 ## 4. Migraciones Drizzle
 
 ```bash
-docker compose up -d postgres   # solo si pruebas local primero
+docker compose up -d postgres   # solo si pruebas en local primero
 pnpm --filter @udccerete/db build
 pnpm --filter @udccerete/db db:generate   # ya generado en repo
 DATABASE_URL="..." pnpm --filter @udccerete/db db:migrate
@@ -66,7 +66,7 @@ Para roles de edición, configurar en Supabase o vía Admin API:
 
 ## 7. Seed inicial (opcional)
 
-Insertar `centers`, `programs`, `wellbeing_routes` y un `super_admin` vía SQL o script. El primer SuperAdmin puede asignarse manualmente en `profiles.role` tras el primer login.
+Insertar `centers`, `programs`, `wellbeing_routes` y un `super_admin` vía SQL o script. El primer superadministrador puede asignarse manualmente en `profiles.role` tras el primer inicio de sesión.
 
 ## 8. Verificación
 

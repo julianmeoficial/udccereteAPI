@@ -1,8 +1,8 @@
-# Architecture Decision Records
+# Registros de decisiones de arquitectura (ADR)
 
-Los ADR capturan **decisiones de arquitectura o de stack que son costosas de revertir**. No sustituyen issues ni PRs: dejan el “por qué” junto al código.
+Los ADR capturan **decisiones de arquitectura o de stack que son costosas de revertir**. No sustituyen issues ni PRs: dejan el «por qué» junto al código.
 
-**Actualizado:** 2026-08-25
+**Actualizado:** 2026-08-28
 
 ## Índice
 
