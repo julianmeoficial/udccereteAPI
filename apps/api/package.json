@@ -3,6 +3,28 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./lib/queue": {
+      "types": "./src/lib/queue.ts",
+      "default": "./src/lib/queue.ts"
+    },
+    "./adapters/r2": {
+      "types": "./src/adapters/r2.ts",
+      "default": "./src/adapters/r2.ts"
+    },
+    "./adapters/typesense": {
+      "types": "./src/adapters/typesense.ts",
+      "default": "./src/adapters/typesense.ts"
+    },
+    "./adapters/resend": {
+      "types": "./src/adapters/resend.ts",
+      "default": "./src/adapters/resend.ts"
+    },
+    "./adapters/vapid": {
+      "types": "./src/adapters/vapid.ts",
+      "default": "./src/adapters/vapid.ts"
+    }
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
@@ -21,7 +43,11 @@
     "@trpc/server": "^11.0.0",
     "@udccerete/db": "workspace:*",
     "@udccerete/schemas": "workspace:*",
+    "@aws-sdk/s3-request-presigner": "^3.750.0",
+    "bullmq": "^5.41.0",
+    "drizzle-orm": "^0.39.3",
     "hono": "^4.7.4",
+    "web-push": "^3.6.7",
     "zod": "^3.24.2",
     "ioredis": "^5.5.0",
     "jose": "^6.0.8",
@@ -30,6 +56,7 @@
   "devDependencies": {
     "@udccerete/tsconfig": "workspace:*",
     "@types/node": "^22.13.0",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9.20.0",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3",

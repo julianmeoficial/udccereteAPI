@@ -2,7 +2,7 @@
 
 Fuente de verdad **en el repositorio** del backend API UDEC Cereté. La spec de producto en Notion complementa este árbol; si hay conflicto, el código y estos archivos mandan sobre el estado de implementación.
 
-**Actualizado:** 2026-08-25
+**Actualizado:** 2026-08-28
 
 ## Cómo está organizada
 
@@ -24,8 +24,9 @@ En la raíz del repo: [README.md](../README.md) (entrada), [CONTRIBUTING.md](../
 | Documento | Contenido |
 |-----------|-----------|
 | [Visión general](architecture/overview.md) | Principios, componentes, qué está implementado |
-| [Autenticación](architecture/auth.md) | Flujo Magic Link + OTP y roles (**diseño**; JWT aún no en la API) |
-| [Trabajo asíncrono](architecture/async.md) | Redis, BullMQ, workers (**diseño**; worker es stub) |
+| [Autenticación](architecture/auth.md) | JWT Supabase + matriz de permisos |
+| [Modelo de datos](architecture/data-model.md) | Entidades Drizzle, RLS, retención |
+| [Trabajo asíncrono](architecture/async.md) | Redis, BullMQ, workers |
 
 ### API (referencia)
 
@@ -39,9 +40,10 @@ En la raíz del repo: [README.md](../README.md) (entrada), [CONTRIBUTING.md](../
 
 | Documento | Contenido |
 |-----------|-----------|
-| [Desarrollo local](operations/local.md) | Node, pnpm, Docker, scripts, arranque de la API |
+| [Desarrollo local](operations/local.md) | Node, pnpm, Docker, migraciones, arranque |
+| [Conectar Supabase](operations/supabase.md) | Checklist cloud |
 | [CI](operations/ci.md) | GitHub Actions (placeholder) |
-| [Despliegue](operations/deploy.md) | Plan VPS; Dockerfile y Caddy aún son stubs |
+| [Despliegue](operations/deploy.md) | Plan VPS; Docker + Caddy |
 
 ### Decisiones (ADR)
 

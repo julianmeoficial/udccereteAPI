@@ -1,8 +1,8 @@
 # Trabajo asíncrono
 
-**Estado:** diseño · **Actualizado:** 2026-08-25
+**Estado:** implementado (colas + worker) · **Actualizado:** 2026-08-28
 
-Redis y BullMQ forman parte del [stack cerrado](../adr/0001-stack-backend.md). **No hay workers en ejecución:** `apps/worker/src/index.ts` es un stub. Redis sí se puede levantar en local vía Compose; la API **no lo usa** (el rate limit actual es en memoria).
+Redis y BullMQ están cableados. Sin `REDIS_URL`, la API encola en no-op (log en dev).
 
 ## Redis (producción)
 

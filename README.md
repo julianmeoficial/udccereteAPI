@@ -1,8 +1,8 @@
 # API UDEC Cereté
 
-Backend **API-first** del Blog UDEC Cereté (Centro Tutorial Cereté, Universidad de Cundinamarca). Fuente única de verdad para la web pública (Next.js), Expo iOS/Android y la app nativa HUAWEI.
+Backend **API-first** del Blog UDEC Cereté (Centro Tutorial Cereté, Universidad de Cartagena). Fuente única de verdad para la web pública (Next.js), Expo iOS/Android y la app nativa HUAWEI.
 
-La API Hono responde en local (`GET /health`, `/api/v1/health`, `/api/v1/meta`, OpenAPI en `/doc`). Auth, base de datos, workers y despliegue a producción **aún no están implementados**.
+La API Hono responde en local con dominio v1 completo, OpenAPI en `/doc` y migraciones Drizzle listas. El siguiente paso es [crear el proyecto Supabase](docs/operations/supabase.md) y conectar credenciales.
 
 Documentación del repo: **[docs/README.md](docs/README.md)**. Spec de producto: [API UDEC Cereté en Notion](https://app.notion.com/p/3c68b2d8659c809fa107d5347729b850).
 
@@ -66,7 +66,7 @@ docker/         # Caddy y Dockerfile (stubs de producción)
 
 ## Licencia
 
-Software propietario de la Universidad de Cundinamarca (Centro Tutorial Cereté). Ver [LICENSE](LICENSE).
+Software propietario de la Universidad de Cartagena (Centro Tutorial Cereté). Ver [LICENSE](LICENSE).
 
 ## Contribuir
 

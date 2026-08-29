@@ -1,14 +1,12 @@
 # Autenticación y autorización
 
-**Estado:** diseño · **Actualizado:** 2026-08-25
+**Estado:** implementado (middleware JWT + permisos) · **Actualizado:** 2026-08-28
 
-Este documento describe el **flujo de producto** acordado. La API **no valida JWT todavía**: no hay middleware de sesión, ni uso de `jose` contra JWKS, ni políticas RLS. El paquete `@supabase/supabase-js` y `jose` están en dependencias de `@udccerete/api`; `SUPABASE_*` figura en `.env.example`.
-
-Contratos Zod de auth: `packages/schemas/src/auth/` (módulo reservado, vacío).
+La API valida JWT con `jose` contra `SUPABASE_JWT_JWKS_URL`. Sin JWKS en desarrollo, acepta tokens de prueba (ver [local](../operations/local.md)).
 
 ## Flujo de acceso (Magic Link + OTP)
 
-1. El usuario escribe su correo institucional (`@ucundinamarca.edu.co`).
+1. El usuario escribe su correo institucional (`@unicartagena.edu.co`).
 2. Supabase Auth solicita el envío vía **Resend** (SPF/DKIM/DMARC propios).
 3. El usuario recibe Magic Link y OTP de 6 dígitos en la misma pantalla.
 4. Al abrir el enlace o enviar el OTP, Supabase emite JWT (1 h) + refresh token rotatorio.

@@ -25,6 +25,28 @@ const EnvSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:3000,http://localhost:5173'),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
+  DATABASE_URL: z.string().optional(),
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_ANON_KEY: z.string().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+  SUPABASE_JWT_JWKS_URL: z.string().url().optional(),
+  REDIS_URL: z.string().optional(),
+  TYPESENSE_HOST: z.string().optional(),
+  TYPESENSE_PORT: z.coerce.number().int().optional(),
+  TYPESENSE_PROTOCOL: z.enum(['http', 'https']).optional(),
+  TYPESENSE_API_KEY: z.string().optional(),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET_NAME: z.string().optional(),
+  R2_PUBLIC_URL: z.string().url().optional(),
+  RESEND_API_KEY: z.string().optional(),
+  PERPLEXITY_API_KEY: z.string().optional(),
+  SENTRY_DSN: z.string().optional(),
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().optional(),
+  SITE_URL: z.string().url().default('http://localhost:3000'),
 });
 
 const parsed = EnvSchema.safeParse(process.env);
@@ -39,3 +61,21 @@ if (!parsed.success) {
 export const API_NAME = 'API Blog UDEC Cereté';
 export const apiVersion = pkg.version;
 export const env = parsed.data;
+
+export function isAuthConfigured(): boolean {
+  return Boolean(env.SUPABASE_JWT_JWKS_URL);
+}
+
+export function isRedisConfigured(): boolean {
+  return Boolean(env.REDIS_URL);
+}
+
+export function isTypesenseConfigured(): boolean {
+  return Boolean(env.TYPESENSE_HOST && env.TYPESENSE_API_KEY);
+}
+
+export function isR2Configured(): boolean {
+  return Boolean(
+    env.R2_ACCOUNT_ID && env.R2_ACCESS_KEY_ID && env.R2_SECRET_ACCESS_KEY && env.R2_BUCKET_NAME,
+  );
+}

@@ -9,20 +9,18 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Added
 
-- Estructura inicial del monorepo (apps, packages, docs, docker).
-- Documentación de arquitectura, API, operaciones y ADR 0001.
-- Dependencias del stack cerrado (Hono, Drizzle, BullMQ, etc.).
-- `docker-compose.yml` con Postgres 17, Redis y Typesense para desarrollo local.
-- `.env.example` con variables de entorno documentadas.
-- Contratos Zod + OpenAPI en `@udccerete/schemas` (`packages/schemas`): error, paginación, params, roles, archivos y respuestas estándar.
-- API Hono inicial (`@udccerete/api`): `GET /health`, `GET /api/v1/health`, `GET /api/v1/meta`, middlewares (request id, CORS, logger, rate limit en memoria, errores) y Swagger UI en `/ui` (spec en `/doc`).
-- Variables `CORS_ORIGIN`, `RATE_LIMIT_WINDOW_MS` y `RATE_LIMIT_MAX` en `.env.example`.
-- Índice de documentación (`docs/README.md`), referencia de endpoints, guía de CI/despliegue, índice y plantilla de ADR.
+- Esquema Drizzle completo (27 tablas, RD-001–RD-011), migración `0000_*`, SQL RLS/triggers para Supabase.
+- Contratos Zod por módulo: auth, posts, comments, calendar, events, resources, forum, notifications, wellbeing, citations, admin, search, ai.
+- Middleware JWT (`jose` + JWKS), permisos por rol, rutas `/api/v1` Must+Should.
+- Workers BullMQ, colas, adaptadores R2/Typesense/Resend/VAPID con degradación sin env.
+- RSS `GET /feed.xml`, health readiness con checks DB/Redis.
+- Docs: `data-model.md`, `operations/supabase.md`, catálogo de endpoints actualizado.
+- Vitest: pruebas de esquemas Zod y matriz de permisos.
 
 ### Changed
 
-- Sobre JSON transversal en toda la API: éxito `{ data, meta }` y error `{ error: { code, message, details }, meta }`. `requestId` y `timestamp` viven solo en `meta`; `details` es siempre un array (vacío si no hay validación).
-- Documentación alineada con el código: se distingue implementado (API Hono) de diseño o stub (auth, workers, DB, CI, Docker de producción). Titularidad del README alineada con `LICENSE` (Universidad de Cundinamarca).
+- API pasa de scaffolding a dominio v1 listo para conectar Supabase.
+- Documentación de arquitectura, auth, async y operaciones actualizada al estado implementado.
 
 ## [0.0.0] - 2026-08-24
 
