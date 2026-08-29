@@ -39,7 +39,7 @@ packages/schemas → Zod + OpenAPI (contratos de dominio implementados)
 packages/tsconfig → TypeScript compartido
 ```
 
-Detalle de HTTP: [Referencia de la API](../api/README.md).
+Detalle de HTTP: [Referencia de la API](../api/README.md). Diagramas de alto nivel: [Diagramas de flujo](./diagrams.md).
 
 ## Implementado vs pendiente
 
@@ -73,6 +73,7 @@ Hoy el Compose local solo levanta Postgres, Redis y Typesense. Ver [Despliegue](
 
 ## Referencias
 
+- [Diagramas de flujo](./diagrams.md)
 - [Autenticación](./auth.md)
 - [Trabajo asíncrono](./async.md)
 - [Modelo de datos](./data-model.md)

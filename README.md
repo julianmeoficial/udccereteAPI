@@ -4,7 +4,7 @@ Backend **API-first** del Blog UDEC Cereté (Centro Tutorial Cereté, Universida
 
 La API Hono responde en local con el dominio v1 completo, OpenAPI en `/doc` y migraciones Drizzle listas. El siguiente paso es [crear el proyecto en Supabase](docs/operations/supabase.md) y conectar las credenciales.
 
-Documentación del repo: **[docs/README.md](docs/README.md)**. Spec de producto: [API UDEC Cereté en Notion](https://app.notion.com/p/3c68b2d8659c809fa107d5347729b850).
+Documentación del repo: **[docs/README.md](docs/README.md)** (incluye [diagramas de flujo](docs/architecture/diagrams.md)). Spec de producto: [API UDEC Cereté en Notion](https://app.notion.com/p/3c68b2d8659c809fa107d5347729b850).
 
 ## Stack (ADR 0001 — agosto 2026)
 

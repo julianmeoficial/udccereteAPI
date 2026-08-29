@@ -24,6 +24,7 @@ En la raíz del repo: [README.md](../README.md) (entrada), [CONTRIBUTING.md](../
 | Documento | Contenido |
 |-----------|-----------|
 | [Visión general](architecture/overview.md) | Principios, componentes, qué está implementado |
+| [Diagramas de flujo](architecture/diagrams.md) | Mermaid: cliente-servidor, datos, acceso, roadmap |
 | [Autenticación](architecture/auth.md) | JWT Supabase + matriz de permisos |
 | [Modelo de datos](architecture/data-model.md) | Entidades Drizzle, RLS, retención |
 | [Trabajo asíncrono](architecture/async.md) | Redis, BullMQ, workers |
