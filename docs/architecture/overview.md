@@ -1,6 +1,6 @@
 # Visión general de la arquitectura
 
-**Estado:** mixto (principios vigentes; runtime parcial) · **Actualizado:** 2026-08-25
+**Estado:** mixto (runtime v1 implementado; integraciones cloud pendientes de credenciales) · **Actualizado:** 2026-08-28
 
 ## Enfoque
 
@@ -45,12 +45,10 @@ Detalle de HTTP: [Referencia de la API](../api/README.md).
 
 | Pieza | Estado |
 |-------|--------|
-| Servidor Hono, `/health`, `/api/v1/health`, `/api/v1/meta`, `/doc`, `/ui` | Implementado |
-| Sobre JSON `{ data, meta }` / `{ error, meta }` | Implementado |
-| CORS, `x-request-id`, rate limit en memoria | Implementado |
-| Auth JWT (`jose` + JWKS), RLS, workers, tRPC, webhooks | Pendiente |
-| Typesense, R2, Sentry, Resend, Perplexity desde la API | Dependencias o env reservados; sin integración |
-| CI lint/typecheck, Docker de producción, Caddy | Stubs |
+| Servidor Hono, dominio `/api/v1`, OpenAPI, auth JWT, Drizzle | Implementado |
+| Workers BullMQ, adaptadores R2/Typesense/Resend/VAPID | Implementado (degradación sin env) |
+| RLS en Supabase | SQL listo; aplicar en cloud |
+| tRPC, Payload CMS, Perplexity Sonar | Pendiente / stub |
 
 ## Infraestructura (producción, decisión)
 

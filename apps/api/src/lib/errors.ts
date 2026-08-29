@@ -31,6 +31,10 @@ export function codeFromHttpStatus(status: number): ApiErrorCode {
       return 'FORBIDDEN';
     case 404:
       return 'NOT_FOUND';
+    case 409:
+      return 'CONFLICT';
+    case 413:
+      return 'PAYLOAD_TOO_LARGE';
     case 429:
       return 'RATE_LIMITED';
     case 503:

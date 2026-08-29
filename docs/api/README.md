@@ -1,114 +1,149 @@
 # Referencia de la API
 
-Superficie HTTP **implementada hoy** en `@udccerete/api`. El contrato de tipos vive en `@udccerete/schemas`. Swagger se genera en runtime.
+Superficie HTTP de `@udccerete/api`. Contratos en `@udccerete/schemas`. OpenAPI en `/doc`, Swagger UI en `/ui`.
 
-**Estado:** implementado (sondas y metadatos) · **Actualizado:** 2026-08-25
+**Estado:** implementado (dominio v1 + auth JWT) · **Actualizado:** 2026-08-28
 
-Arranque: ver [Desarrollo local](../operations/local.md). Por defecto: `http://localhost:3001`.
+Arranque: [Desarrollo local](../operations/local.md). Default: `http://localhost:3001`.
 
-## Endpoints
+## Sistema
 
-| Método | Ruta | Rate limit | Descripción |
-|--------|------|------------|-------------|
-| `GET` | `/health` | No | Sonda para balanceadores. Equivale en cuerpo a `/api/v1/health`. |
-| `GET` | `/api/v1/health` | Sí (`/api/*`) | Disponibilidad de la API v1. |
-| `GET` | `/api/v1/meta` | Sí | Nombre, versión (`package.json` de `@udccerete/api`) y `NODE_ENV`. |
-| `GET` | `/doc` | No | OpenAPI 3.1 en JSON. |
-| `GET` | `/ui` | No | Swagger UI (`url: /doc`). |
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/health` | No | Liveness (balanceador) |
+| `GET` | `/api/v1/health` | No | Readiness + checks DB/Redis |
+| `GET` | `/api/v1/meta` | No | Nombre, versión, entorno |
+| `GET` | `/feed.xml` | No | RSS del blog |
+| `GET` | `/doc` | No | OpenAPI 3.1 JSON |
+| `GET` | `/ui` | No | Swagger UI |
 
-Rutas desconocidas responden `404` con el [formato de error](errors.md) (`NOT_FOUND`).
+## Sesión y perfil
 
-No hay tRPC, webhooks, autenticación JWT ni recursos de dominio (posts, usuarios). Esos contratos están reservados en `packages/schemas` (`auth/`, `posts/`, `users/`) como módulos vacíos.
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/me` | JWT | Perfil autenticado |
+| `PATCH` | `/api/v1/me` | JWT | Actualizar perfil |
+| `DELETE` | `/api/v1/me` | JWT | Solicitar borrado (15 días) |
+| `GET` | `/api/v1/me/saved` | JWT | Publicaciones guardadas |
+| `PUT` | `/api/v1/posts/:id/save` | JWT | Guardar publicación |
+| `DELETE` | `/api/v1/posts/:id/save` | JWT | Quitar de guardados |
+| `POST` | `/api/v1/posts/:id/read` | JWT | Marcar como leída |
+
+## Blog
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/posts` | Opcional | Listado (público: solo `published`) |
+| `GET` | `/api/v1/posts/:slug` | Opcional | Detalle por slug |
+| `POST` | `/api/v1/posts` | Editor+ | Crear |
+| `PATCH` | `/api/v1/posts/:id` | Editor+ | Actualizar |
+| `POST` | `/api/v1/posts/:id/archive` | Editor+ | Archivar (RN-008) |
+| `GET` | `/api/v1/categories` | No | Categorías |
+| `GET` | `/api/v1/tags` | No | Etiquetas |
+
+## Comentarios
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/posts/:postId/comments` | No | Hilos |
+| `POST` | `/api/v1/posts/:postId/comments` | Estudiante+ institucional | Comentar |
+| `PATCH` | `/api/v1/moderation/comments/:id` | Moderador | Aprobar/ocultar |
+
+## Búsqueda
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/search` | No | Typesense; fallback SQL + aviso |
+
+## Calendario
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/calendar` | No | Actividades filtrables |
+| `GET` | `/api/v1/calendar.ics` | No | Exportación iCal |
+| `GET` | `/api/v1/calendar/feed/:token` | Token | Suscripción iCal firmada |
+| `POST/PATCH/DELETE` | `/api/v1/calendar` | Staff | CRUD actividades |
+| `POST` | `/api/v1/calendar/import` | Staff | Import CSV |
+
+## Eventos
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET/POST/PATCH/DELETE` | `/api/v1/events` | Mixto | CRUD eventos |
+| `POST/DELETE` | `/api/v1/events/:id/registrations` | Institucional | Inscripción |
+
+## Recursos
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/resources` | Opcional | Listado (alcance RN-005) |
+| `POST` | `/api/v1/resources` | Docente+ | Metadata + URL prefirmada R2 |
+| `GET` | `/api/v1/resources/:id/download` | Según alcance | URL de descarga |
+
+## Bienestar
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/wellbeing/routes` | **No** (RN-007) | Directorio de atención |
+| `PUT` | `/api/v1/wellbeing/routes/:id` | Staff | Actualizar ruta |
+
+## Foro (opiniones anónimas)
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/forum/opinions` | No | Opiniones aprobadas |
+| `GET` | `/api/v1/forum/summary` | No | Resumen por curso/tutor |
+| `POST` | `/api/v1/forum/opinions` | Institucional | Enviar (sin user_id en DB) |
+| `PATCH` | `/api/v1/moderation/forum/:id` | Moderador | Moderación previa |
+
+## Notificaciones
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/notifications` | JWT | Inbox |
+| `PATCH` | `/api/v1/notifications/:id/read` | JWT | Marcar leída |
+| `POST` | `/api/v1/push/subscriptions` | JWT | Web Push (VAPID) |
+
+## Citas académicas
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `POST` | `/api/v1/citations` | No | APA7/Vancouver vía Crossref |
+
+## Administración
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/v1/admin/users` | SuperAdmin | Usuarios |
+| `PATCH` | `/api/v1/admin/users/:id/role` | SuperAdmin | Asignar rol |
+| `GET` | `/api/v1/admin/audit` | SuperAdmin | Auditoría |
+| `GET` | `/api/v1/admin/analytics` | Admin+ | Resumen analítica |
+
+## IA (stub)
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `POST` | `/api/v1/ai/ask` | JWT | `503 SERVICE_DEGRADED` (fase posterior) |
 
 ## Sobre JSON
 
-Éxito: `{ "data": …, "meta": { "requestId", "timestamp" } }`.
+Éxito: `{ "data", "meta" }`. Error: `{ "error", "meta" }`. Ver [Errores](errors.md).
 
-Error: `{ "error": { "code", "message", "details" }, "meta": { "requestId", "timestamp" } }`.
-
-Helpers: `ok`, `created`, `okPaginated` en `apps/api/src/lib/envelope.ts`. Detalle en [Errores](errors.md).
-
-### `GET /api/v1/health`
-
-```json
-{
-  "data": { "status": "ok" },
-  "meta": {
-    "requestId": "550e8400-e29b-41d4-a716-446655440000",
-    "timestamp": "2026-08-25T00:00:00.000Z"
-  }
-}
-```
-
-### `GET /api/v1/meta`
-
-```json
-{
-  "data": {
-    "name": "API Blog UDEC Cereté",
-    "version": "0.0.0",
-    "environment": "development",
-    "status": "ok"
-  },
-  "meta": {
-    "requestId": "550e8400-e29b-41d4-a716-446655440000",
-    "timestamp": "2026-08-25T00:00:00.000Z"
-  }
-}
-```
+Excepciones sin sobre JSON: `/feed.xml`, `/api/v1/calendar.ics`.
 
 ## Headers
 
-| Header | Dirección | Uso |
-|--------|-----------|-----|
-| `x-request-id` | Request / response | Si el cliente lo envía, se reutiliza; si no, la API genera un UUID. Expuesto en CORS. |
-| `Authorization` | Request | Reservado para JWT. Aceptado en CORS; **aún no hay middleware de auth**. |
-| `Content-Type` | Request | `application/json` cuando haya cuerpo. |
-| `Retry-After` | Response | Segundos hasta reintentar, solo en `429`. |
+| Header | Uso |
+|--------|-----|
+| `Authorization: Bearer <JWT>` | Supabase Auth |
+| `x-request-id` | Trazabilidad (UUID) |
 
-`meta.requestId` coincide con `x-request-id`.
+## CORS y rate limit
 
-## CORS
-
-Variable `CORS_ORIGIN`: lista separada por comas. Default de desarrollo: `http://localhost:3000,http://localhost:5173`.
-
-- Credenciales activas salvo que la lista incluya `*`.
-- Headers permitidos: `Content-Type`, `Authorization`, `x-request-id`.
-- Header expuesto: `x-request-id`.
-
-## Rate limit
-
-Middleware en memoria, **por proceso**, ventana fija. Aplica solo a `/api/*` (no a `/health`, `/doc` ni `/ui`). Ignora `OPTIONS`.
-
-| Variable | Default | Significado |
-|----------|---------|-------------|
-| `RATE_LIMIT_WINDOW_MS` | `60000` | Ventana en milisegundos |
-| `RATE_LIMIT_MAX` | `100` | Peticiones por clave e intervalo |
-
-Clave: primer IP de `x-forwarded-for`, si no `x-real-ip`, si no `local`. Al superar el cupo: `429` + `RATE_LIMITED`. En producción se prevé gateway y/o Redis (`REDIS_URL`); hoy Redis no participa.
-
-## Esquemas compartidos (`@udccerete/schemas`)
-
-| Módulo | Estado |
-|--------|--------|
-| `common/error`, `response`, `pagination`, `params`, `query`, `role`, `file` | Implementado |
-| `auth/`, `posts/`, `users/` | Reservados (exportan vacío) |
-
-Roles en contrato: `super_admin`, `admin`, `editor`, `teacher`, `student`, `visitor`.
-
-Paginación (cuando existan listados): query `page` (default 1) y `pageSize` (default 20, máx. 100); `meta.pagination` con `page`, `pageSize`, `total`, `totalPages`.
-
-## Código de referencia
-
-| Pieza | Ruta |
-|-------|------|
-| App y middlewares | `apps/api/src/app.ts` |
-| Rutas v1 | `apps/api/src/routes/v1/` |
-| OpenAPI / Swagger | `apps/api/src/openapi.ts` |
-| Contratos | `packages/schemas/src/` |
+Ver configuración en [README anterior](./README.md) — `CORS_ORIGIN`, `RATE_LIMIT_*`.
 
 ## Referencias
 
-- [Versionado](versioning.md)
 - [Errores](errors.md)
-- [ADR 0001](../adr/0001-stack-backend.md)
+- [Versionado](versioning.md)
+- [Conectar Supabase](../operations/supabase.md)

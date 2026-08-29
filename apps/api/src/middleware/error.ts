@@ -2,6 +2,10 @@ import type { ErrorHandler, NotFoundHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { ZodError } from 'zod';
 import { AppError, codeFromHttpStatus, toApiError } from '../lib/errors.js';
+import {
+  InstitutionalEmailError,
+  PermissionError,
+} from '../lib/permissions.js';
 import { env } from '../env.js';
 import type { AppBindings } from '../types.js';
 
@@ -32,6 +36,20 @@ export const errorHandler: ErrorHandler<AppBindings> = (err, c) => {
         details: err.details,
       }),
       err.status,
+    );
+  }
+
+  if (err instanceof PermissionError) {
+    return c.json(
+      toApiError({ code: 'FORBIDDEN', message: err.message, requestId }),
+      403,
+    );
+  }
+
+  if (err instanceof InstitutionalEmailError) {
+    return c.json(
+      toApiError({ code: 'FORBIDDEN', message: err.message, requestId }),
+      403,
     );
   }
 

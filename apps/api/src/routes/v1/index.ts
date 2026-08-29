@@ -1,11 +1,39 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import type { AppBindings } from '../../types.js';
+import { registerAdminRoutes } from './admin/index.js';
+import { registerAiRoutes } from './ai.js';
+import { registerCalendarRoutes } from './calendar.js';
+import { registerCitationsRoutes } from './citations.js';
+import { registerCommentsRoutes } from './comments.js';
+import { registerEventsRoutes } from './events.js';
+import { registerForumRoutes } from './forum.js';
 import { registerHealthRoutes } from './health.js';
+import { registerMeRoutes } from './me.js';
 import { registerMetaRoutes } from './meta.js';
+import { registerNotificationsRoutes } from './notifications.js';
+import { registerPostsRoutes } from './posts.js';
+import { registerResourcesRoutes } from './resources.js';
+import { registerSavedRoutes } from './saved.js';
+import { registerSearchRoutes } from './search.js';
+import { registerWellbeingRoutes } from './wellbeing.js';
 
 export function createV1Router() {
   const v1 = new OpenAPIHono<AppBindings>();
   registerHealthRoutes(v1);
   registerMetaRoutes(v1);
+  registerMeRoutes(v1);
+  registerPostsRoutes(v1);
+  registerCommentsRoutes(v1);
+  registerSearchRoutes(v1);
+  registerCalendarRoutes(v1);
+  registerEventsRoutes(v1);
+  registerResourcesRoutes(v1);
+  registerWellbeingRoutes(v1);
+  registerForumRoutes(v1);
+  registerNotificationsRoutes(v1);
+  registerCitationsRoutes(v1);
+  registerAdminRoutes(v1);
+  registerAiRoutes(v1);
+  registerSavedRoutes(v1);
   return v1;
 }

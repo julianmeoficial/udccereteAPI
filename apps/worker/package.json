@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@sentry/node": "^9.5.0",
+    "@udccerete/api": "workspace:*",
     "@udccerete/db": "workspace:*",
     "@udccerete/schemas": "workspace:*",
     "bullmq": "^5.41.0",
