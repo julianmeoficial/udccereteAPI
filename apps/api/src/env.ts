@@ -47,6 +47,7 @@ const EnvSchema = z.object({
   VAPID_PRIVATE_KEY: z.string().optional(),
   VAPID_SUBJECT: z.string().optional(),
   SITE_URL: z.string().url().default('http://localhost:3000'),
+  AUTH_REDIRECT_URL: z.string().url().optional(),
 });
 
 const parsed = EnvSchema.safeParse(process.env);
@@ -64,6 +65,10 @@ export const env = parsed.data;
 
 export function isAuthConfigured(): boolean {
   return Boolean(env.SUPABASE_JWT_JWKS_URL);
+}
+
+export function isSupabaseAuthClientConfigured(): boolean {
+  return Boolean(env.SUPABASE_URL && env.SUPABASE_ANON_KEY);
 }
 
 export function isRedisConfigured(): boolean {

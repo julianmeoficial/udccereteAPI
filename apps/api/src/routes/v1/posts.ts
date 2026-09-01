@@ -14,6 +14,7 @@ import {
 } from '@udccerete/schemas';
 import { ok, created, okPaginated } from '../../lib/envelope.js';
 import { apiErrorJson } from '../../lib/openapi-responses.js';
+import { resolvePostsListQuery } from '../../lib/posts-query.js';
 import { requireInstitutionalEmail, requirePermission } from '../../lib/permissions.js';
 import { getUser } from '../../middleware/auth.js';
 import { requireDatabase } from '../../middleware/database.js';
@@ -161,7 +162,8 @@ export function registerPostsRoutes(app: OpenAPIHono<AppBindings>) {
 
   app.openapi(listPostsRoute, async (c) => {
     const query = c.req.valid('query');
-    const { items, pagination } = await listPosts(query);
+    const effectiveQuery = resolvePostsListQuery(query, c.get('user'));
+    const { items, pagination } = await listPosts(effectiveQuery);
     return okPaginated(c, items, pagination);
   });
 

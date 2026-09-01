@@ -12,13 +12,21 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  default_role text;
 BEGIN
+  IF NEW.email ILIKE '%@unicartagena.edu.co' THEN
+    default_role := 'student';
+  ELSE
+    default_role := 'visitor';
+  END IF;
+
   INSERT INTO public.profiles (id, email, full_name, role, email_verified)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_app_meta_data->>'role', 'student'),
+    COALESCE(NEW.raw_app_meta_data->>'role', default_role),
     COALESCE((NEW.email_confirmed_at IS NOT NULL), false)
   )
   ON CONFLICT (id) DO UPDATE SET

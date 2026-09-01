@@ -2,7 +2,7 @@
 
 Fuente de verdad **en el repositorio** del backend API UDEC Cereté. La spec de producto en Notion complementa este árbol; si hay conflicto, el código y estos archivos mandan sobre el estado de implementación.
 
-**Actualizado:** 2026-08-28
+**Actualizado:** 2026-08-31
 
 ## Cómo está organizada
 
@@ -41,8 +41,10 @@ En la raíz del repo: [README.md](../README.md) (entrada), [CONTRIBUTING.md](../
 
 | Documento | Contenido |
 |-----------|-----------|
-| [Desarrollo local](operations/local.md) | Node, pnpm, Docker, migraciones, arranque |
-| [Conectar Supabase](operations/supabase.md) | Guía para el entorno cloud |
+| [Desarrollo local](operations/local.md) | Node, pnpm, Docker, migraciones, seed, arranque |
+| [Variables de entorno](operations/env.md) | Tabla de `.env` y dónde obtener cada valor |
+| [Migraciones a Supabase](operations/migrations-supabase.md) | Primera vez: Drizzle → triggers → RLS → seed |
+| [Conectar Supabase](operations/supabase.md) | Auth, Google OAuth, checklist cloud |
 | [CI](operations/ci.md) | GitHub Actions (marcador de posición) |
 | [Despliegue](operations/deploy.md) | Plan VPS; Docker + Caddy |
 

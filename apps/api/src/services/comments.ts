@@ -1,5 +1,5 @@
 import { and, asc, count, desc, eq, inArray, isNull } from 'drizzle-orm';
-import { commentReports, comments, getDb, profiles } from '@udccerete/db';
+import { commentReports, comments, getDb, posts, profiles } from '@udccerete/db';
 import {
   CommentsQuerySchema,
   CreateCommentSchema,
@@ -41,6 +41,12 @@ function mapComment(row: CommentRow, replies: CommentWithReplies[] = []): Commen
   };
 }
 
+async function assertPostExists(postId: string): Promise<void> {
+  const db = getDb();
+  const [row] = await db.select({ id: posts.id }).from(posts).where(eq(posts.id, postId)).limit(1);
+  if (!row) throw new AppError('NOT_FOUND', 'Publicación no encontrada');
+}
+
 async function fetchCommentRow(commentId: string): Promise<CommentRow> {
   const db = getDb();
   const [row] = await db
@@ -80,6 +86,7 @@ export async function listComments(
   query: CommentsQuery,
 ): Promise<{ items: Comment[]; pagination: PaginationMeta }> {
   const db = getDb();
+  await assertPostExists(postId);
 
   const countRows = await db
     .select({ total: count() })
@@ -121,6 +128,7 @@ export async function createComment(
   input: CreateComment,
 ): Promise<Comment> {
   const db = getDb();
+  await assertPostExists(postId);
 
   if (input.parentId) {
     const [parent] = await db

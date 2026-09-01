@@ -1,4 +1,18 @@
-import { and, asc, count, desc, eq, ilike, inArray, or, sql, type SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  countDistinct,
+  desc,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  lte,
+  or,
+  sql,
+  type SQL,
+} from 'drizzle-orm';
 import {
   categories,
   getDb,
@@ -147,10 +161,10 @@ function buildPostsWhere(query: PostsQuery) {
     conditions.push(or(ilike(posts.title, pattern), ilike(posts.excerpt, pattern))!);
   }
   if (query.from) {
-    conditions.push(sql`${posts.publishedAt} >= ${new Date(query.from)}`);
+    conditions.push(gte(posts.publishedAt, new Date(query.from)));
   }
   if (query.to) {
-    conditions.push(sql`${posts.publishedAt} <= ${new Date(query.to)}`);
+    conditions.push(lte(posts.publishedAt, new Date(query.to)));
   }
 
   return conditions.length > 0 ? and(...conditions) : undefined;
@@ -192,6 +206,38 @@ async function syncPostTags(postId: string, tagIds: string[] | undefined) {
   await db.insert(postTags).values(tagIds.map((tagId) => ({ postId, tagId })));
 }
 
+function buildPostsCountQuery(db: ReturnType<typeof getDb>, needsTagJoin: boolean) {
+  if (needsTagJoin) {
+    return db
+      .select({ total: countDistinct(posts.id) })
+      .from(posts)
+      .innerJoin(profiles, eq(posts.authorId, profiles.id))
+      .leftJoin(categories, eq(posts.categoryId, categories.id))
+      .innerJoin(postTags, eq(postTags.postId, posts.id))
+      .innerJoin(tags, eq(postTags.tagId, tags.id));
+  }
+
+  return db
+    .select({ total: count() })
+    .from(posts)
+    .innerJoin(profiles, eq(posts.authorId, profiles.id))
+    .leftJoin(categories, eq(posts.categoryId, categories.id));
+}
+
+function buildPostsListQuery(db: ReturnType<typeof getDb>, needsTagJoin: boolean) {
+  const base = db
+    .select({ post: posts, author: profiles, category: categories })
+    .from(posts)
+    .innerJoin(profiles, eq(posts.authorId, profiles.id))
+    .leftJoin(categories, eq(posts.categoryId, categories.id));
+
+  if (!needsTagJoin) return base;
+
+  return base
+    .innerJoin(postTags, eq(postTags.postId, posts.id))
+    .innerJoin(tags, eq(postTags.tagId, tags.id));
+}
+
 export async function listPosts(
   query: PostsQuery,
 ): Promise<{ items: PostSummary[]; pagination: PaginationMeta }> {
@@ -199,28 +245,11 @@ export async function listPosts(
   const where = buildPostsWhere(query);
   const needsTagJoin = Boolean(query.tag);
 
-  const baseFrom = db
-    .select({ post: posts, author: profiles, category: categories })
-    .from(posts)
-    .innerJoin(profiles, eq(posts.authorId, profiles.id))
-    .leftJoin(categories, eq(posts.categoryId, categories.id));
-
-  const fromQuery = needsTagJoin
-    ? baseFrom
-        .innerJoin(postTags, eq(postTags.postId, posts.id))
-        .innerJoin(tags, eq(postTags.tagId, tags.id))
-    : baseFrom;
-
-  const countRows = await db
-    .select({ total: count() })
-    .from(posts)
-    .innerJoin(profiles, eq(posts.authorId, profiles.id))
-    .leftJoin(categories, eq(posts.categoryId, categories.id))
-    .where(where ?? sql`true`);
+  const countRows = await buildPostsCountQuery(db, needsTagJoin).where(where ?? sql`true`);
 
   const total = Number(countRows[0]?.total ?? 0);
 
-  const rows = await fromQuery
+  const rows = await buildPostsListQuery(db, needsTagJoin)
     .where(where ?? sql`true`)
     .orderBy(desc(posts.publishedAt), desc(posts.createdAt))
     .limit(query.pageSize)

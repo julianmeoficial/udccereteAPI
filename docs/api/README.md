@@ -2,7 +2,7 @@
 
 Superficie HTTP de `@udccerete/api`. Contratos en `@udccerete/schemas`. OpenAPI en `/doc`, Swagger UI en `/ui`.
 
-**Estado:** implementado (dominio v1 + auth JWT) · **Actualizado:** 2026-08-28
+**Estado:** implementado (dominio v1 + auth JWT + proxy auth) · **Actualizado:** 2026-08-31
 
 Arranque: [Desarrollo local](../operations/local.md). Por defecto: `http://localhost:3001`.
 
@@ -16,6 +16,17 @@ Arranque: [Desarrollo local](../operations/local.md). Por defecto: `http://local
 | `GET` | `/feed.xml` | No | RSS del blog |
 | `GET` | `/doc` | No | OpenAPI 3.1 JSON |
 | `GET` | `/ui` | No | Swagger UI |
+
+## Autenticación
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `POST` | `/api/v1/auth/magic-link` | No | Enviar Magic Link por correo (202) |
+| `POST` | `/api/v1/auth/google` | No | Obtener URL de OAuth Google |
+| `POST` | `/api/v1/auth/verify` | No | Verificar OTP de 6 dígitos |
+| `POST` | `/api/v1/auth/session` | No | Intercambiar código PKCE por sesión |
+
+Requieren `SUPABASE_URL` + `SUPABASE_ANON_KEY`. Los clientes también pueden usar `@supabase/supabase-js` directamente. Ver [auth](../architecture/auth.md).
 
 ## Sesión y perfil
 
@@ -45,8 +56,9 @@ Arranque: [Desarrollo local](../operations/local.md). Por defecto: `http://local
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| `GET` | `/api/v1/posts/:postId/comments` | No | Hilos |
+| `GET` | `/api/v1/posts/:postId/comments` | No | Hilos (404 si el post no existe) |
 | `POST` | `/api/v1/posts/:postId/comments` | Estudiante+ institucional | Comentar |
+| `POST` | `/api/v1/comments/:id/report` | Estudiante+ institucional | Reportar comentario |
 | `PATCH` | `/api/v1/moderation/comments/:id` | Moderador | Aprobar/ocultar |
 
 ## Búsqueda

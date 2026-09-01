@@ -103,3 +103,4 @@ export const CreatePostSchema = z
 export const UpdatePostSchema = CreatePostSchema.partial().openapi('UpdatePost');
 
 export type Post = z.infer<typeof PostSchema>;
+export type PostsQuery = z.infer<typeof PostsQuerySchema>;

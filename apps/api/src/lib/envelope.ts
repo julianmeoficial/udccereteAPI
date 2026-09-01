@@ -17,6 +17,10 @@ export function created<T>(c: Context<AppBindings>, data: T) {
   return c.json({ data, meta: envelopeMeta(c) } satisfies SuccessResponse<T>, 201);
 }
 
+export function accepted<T>(c: Context<AppBindings>, data: T) {
+  return c.json({ data, meta: envelopeMeta(c) } satisfies SuccessResponse<T>, 202);
+}
+
 export function okPaginated<T>(
   c: Context<AppBindings>,
   data: T[],

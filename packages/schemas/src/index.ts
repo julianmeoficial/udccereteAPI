@@ -13,6 +13,7 @@ export * from './common/role.schema.js';
 export * from './common/file.schema.js';
 
 export * from './auth/index.js';
+export * from './auth/auth-flow.js';
 export * from './posts/index.js';
 export * from './users/index.js';
 export * from './comments/index.js';

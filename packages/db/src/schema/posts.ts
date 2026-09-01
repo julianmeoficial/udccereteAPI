@@ -1,4 +1,4 @@
-import { pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { profiles } from './profiles.js';
 import { postStatusEnum } from './enums.js';
 
@@ -18,25 +18,29 @@ export const tags = pgTable('tags', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const posts = pgTable('posts', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  title: text('title').notNull(),
-  slug: text('slug').notNull().unique(),
-  excerpt: text('excerpt'),
-  content: text('content').notNull(),
-  coverImageUrl: text('cover_image_url'),
-  categoryId: uuid('category_id').references(() => categories.id, { onDelete: 'set null' }),
-  authorId: uuid('author_id')
-    .notNull()
-    .references(() => profiles.id, { onDelete: 'restrict' }),
-  area: text('area'),
-  status: postStatusEnum('status').notNull().default('draft'),
-  publishedAt: timestamp('published_at', { withTimezone: true }),
-  scheduledAt: timestamp('scheduled_at', { withTimezone: true }),
-  archivedAt: timestamp('archived_at', { withTimezone: true }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const posts = pgTable(
+  'posts',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    title: text('title').notNull(),
+    slug: text('slug').notNull().unique(),
+    excerpt: text('excerpt'),
+    content: text('content').notNull(),
+    coverImageUrl: text('cover_image_url'),
+    categoryId: uuid('category_id').references(() => categories.id, { onDelete: 'set null' }),
+    authorId: uuid('author_id')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'restrict' }),
+    area: text('area'),
+    status: postStatusEnum('status').notNull().default('draft'),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+    scheduledAt: timestamp('scheduled_at', { withTimezone: true }),
+    archivedAt: timestamp('archived_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('posts_status_published_at_idx').on(table.status, table.publishedAt)],
+);
 
 export const postTags = pgTable(
   'post_tags',
@@ -48,7 +52,10 @@ export const postTags = pgTable(
       .notNull()
       .references(() => tags.id, { onDelete: 'cascade' }),
   },
-  (table) => [primaryKey({ columns: [table.postId, table.tagId] })],
+  (table) => [
+    primaryKey({ columns: [table.postId, table.tagId] }),
+    index('post_tags_tag_id_idx').on(table.tagId),
+  ],
 );
 
 export const savedPosts = pgTable(

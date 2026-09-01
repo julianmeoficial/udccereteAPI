@@ -2,23 +2,13 @@
 
 Lista de verificación para pasar de desarrollo local a Supabase gestionado. **No commitear secretos.**
 
-**Actualizado:** 2026-08-28
+**Actualizado:** 2026-08-31
 
-## 1. Crear proyecto
+El proyecto cloud `udccereteAPI` (`asuocmpkclihdrrtxmge`, región `us-west-2`) ya existe. Si partes de cero en otro entorno, crea un proyecto nuevo en el [Dashboard](https://supabase.com/dashboard).
 
-1. [Supabase Dashboard](https://supabase.com/dashboard) → nuevo proyecto (PostgreSQL 17).
-2. Anotar **Project URL**, **anon key**, **service role key** y **Database URL** (pooler, modo `transaction`).
+## 1. Variables de entorno
 
-## 2. Auth (Magic Link + OTP)
-
-1. Authentication → Providers → Email: habilitar Magic Link.
-2. Restringir dominio `@unicartagena.edu.co` si aplica.
-3. Configurar SMTP con **Resend** (SPF/DKIM/DMARC del dominio del blog).
-4. Caducidad del JWT: 1 h; refresh rotatorio según [auth](../architecture/auth.md).
-
-## 3. Variables de entorno
-
-Copiar [`.env.example`](../../.env.example) → `.env`:
+Copiar [`.env.example`](../../.env.example) → `.env` y completar según [env.md](./env.md):
 
 ```bash
 DATABASE_URL=postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
@@ -26,31 +16,36 @@ SUPABASE_URL=https://[ref].supabase.co
 SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...   # solo workers / operaciones sin user_id
 SUPABASE_JWT_JWKS_URL=https://[ref].supabase.co/auth/v1/.well-known/jwks.json
+SITE_URL=https://tu-frontend.com
 ```
 
-Opcionales (degradación elegante si faltan): `REDIS_URL`, Typesense, R2, `RESEND_API_KEY`, VAPID.
+## 2. Auth (Magic Link + Google OAuth)
 
-## 4. Migraciones Drizzle
+### Email / Magic Link
 
-```bash
-docker compose up -d postgres   # solo si pruebas en local primero
-pnpm --filter @udccerete/db build
-pnpm --filter @udccerete/db db:generate   # ya generado en repo
-DATABASE_URL="..." pnpm --filter @udccerete/db db:migrate
-```
+1. Authentication → Providers → Email: habilitar Magic Link.
+2. **No** restringir dominio en el panel (cualquier email puede registrarse; la API exige `@unicartagena.edu.co` solo para publicar/comentar).
+3. Configurar SMTP con **Resend** (SPF/DKIM/DMARC del dominio del blog).
+4. Plantilla de correo: incluir `{{ .ConfirmationURL }}` y `{{ .Token }}` (OTP).
+5. Caducidad del JWT: 1 h; refresh rotatorio según [auth](../architecture/auth.md).
 
-Migración inicial: [`packages/db/drizzle/0000_*.sql`](../../packages/db/drizzle/).
+### Google OAuth
 
-## 5. SQL de Supabase (RLS + triggers)
+1. [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → OAuth 2.0 Client ID.
+2. Tipo *External* (no requiere Workspace de Unicartagena). Modo *Testing* + usuarios de prueba, o publicar la app.
+3. Authorized redirect URI: `https://[ref].supabase.co/auth/v1/callback`
+4. Supabase Dashboard → Authentication → Providers → Google → pegar Client ID y Secret.
+5. Authentication → URL Configuration → Redirect URLs: `SITE_URL`, rutas de callback del frontend.
 
-En el SQL Editor de Supabase, en orden:
+## 3. Migraciones y SQL
 
-1. [`packages/db/supabase/triggers.sql`](../../packages/db/supabase/triggers.sql) — crea `profiles` al registrar usuario en `auth.users`.
-2. [`packages/db/supabase/rls.sql`](../../packages/db/supabase/rls.sql) — políticas por rol.
+Seguir el orden completo en [migrations-supabase.md](./migrations-supabase.md):
 
-Verificar que `auth.uid()` y `auth.jwt()` estén disponibles (extensión incluida en Supabase).
+1. `pnpm --filter @udccerete/db db:migrate` (Drizzle `0000` + `0001`)
+2. SQL Editor: `triggers.sql` → `rls.sql`
+3. `pnpm --filter @udccerete/db db:seed:catalog` (opcional)
 
-## 6. Metadatos JWT (`app_metadata`)
+## 4. Metadatos JWT (`app_metadata`)
 
 Para roles de edición, configurar en Supabase o vía Admin API:
 
@@ -64,35 +59,35 @@ Para roles de edición, configurar en Supabase o vía Admin API:
 
 **No usar `user_metadata` para autorizar** (ver [auth](../architecture/auth.md)).
 
-## 7. Seed inicial (opcional)
-
-Insertar `centers`, `programs`, `wellbeing_routes` y un `super_admin` vía SQL o script. El primer superadministrador puede asignarse manualmente en `profiles.role` tras el primer inicio de sesión.
-
-## 8. Verificación
+## 5. Verificación
 
 ```bash
 pnpm --filter @udccerete/api dev
 curl http://localhost:3001/api/v1/health
 curl http://localhost:3001/doc
-```
 
-Con JWT válido de Supabase:
+# Magic Link
+curl -X POST http://localhost:3001/api/v1/auth/magic-link \
+  -H "Content-Type: application/json" \
+  -d '{"email":"estudiante@unicartagena.edu.co"}'
 
-```bash
+# Con JWT válido
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3001/api/v1/me
 ```
 
-## 9. Servicios cloud adicionales
+## 6. Servicios cloud adicionales
 
 | Servicio | Variable | Uso |
 |----------|----------|-----|
 | Cloudflare R2 | `R2_*` | Recursos y portadas |
 | Typesense Cloud o VPS | `TYPESENSE_*` | Búsqueda (`GET /api/v1/search`) |
-| Resend | `RESEND_API_KEY` | Notificaciones y Magic Link SMTP |
+| Resend | SMTP en Supabase + `RESEND_API_KEY` en API | Magic Link + notificaciones |
 | Redis (Upstash o VPS) | `REDIS_URL` | Colas BullMQ |
 
 ## Referencias
 
+- [Variables de entorno](./env.md)
+- [Migraciones a Supabase](./migrations-supabase.md)
 - [Desarrollo local](./local.md)
 - [Modelo de datos](../architecture/data-model.md)
 - [Autenticación](../architecture/auth.md)

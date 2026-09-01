@@ -2,6 +2,7 @@ import type { ErrorHandler, NotFoundHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { ZodError } from 'zod';
 import { AppError, codeFromHttpStatus, toApiError } from '../lib/errors.js';
+import { appErrorFromPostgres, asPostgresError } from '../lib/postgres-errors.js';
 import {
   InstitutionalEmailError,
   PermissionError,
@@ -72,6 +73,17 @@ export const errorHandler: ErrorHandler<AppBindings> = (err, c) => {
       }),
       400,
     );
+  }
+
+  const pgErr = asPostgresError(err);
+  if (pgErr) {
+    const mapped = appErrorFromPostgres(pgErr);
+    if (mapped) {
+      return c.json(
+        toApiError({ code: mapped.code, message: mapped.message, requestId }),
+        mapped.code === 'CONFLICT' ? 409 : 404,
+      );
+    }
   }
 
   if (env.NODE_ENV !== 'production') {

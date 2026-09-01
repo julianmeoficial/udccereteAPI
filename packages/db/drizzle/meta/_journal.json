@@ -8,6 +8,13 @@
       "when": 1787968158625,
       "tag": "0000_soft_captain_marvel",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787968158626,
+      "tag": "0001_blog_indexes",
+      "breakpoints": true
     }
   ]
 }

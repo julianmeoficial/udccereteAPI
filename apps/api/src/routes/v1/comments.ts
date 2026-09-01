@@ -1,5 +1,4 @@
-import { createRoute, type OpenAPIHono } from '@hono/zod-openapi';
-import { z } from '@hono/zod-openapi';
+import { createRoute, type OpenAPIHono, z } from '@hono/zod-openapi';
 import {
   CommentSchema,
   CommentsQuerySchema,
@@ -7,6 +6,7 @@ import {
   IdParamSchema,
   ModerateCommentSchema,
   PaginatedResponseSchema,
+  ReportCommentSchema,
   SuccessResponseSchema,
 } from '@udccerete/schemas';
 import { ok, created, okPaginated } from '../../lib/envelope.js';
@@ -15,7 +15,7 @@ import { requireInstitutionalEmail, requirePermission } from '../../lib/permissi
 import { getUser } from '../../middleware/auth.js';
 import { requireDatabase } from '../../middleware/database.js';
 import type { AppBindings } from '../../types.js';
-import { createComment, listComments, moderateComment } from '../../services/comments.js';
+import { createComment, listComments, moderateComment, reportComment } from '../../services/comments.js';
 
 const PostIdParamSchema = z
   .object({
@@ -98,8 +98,43 @@ const moderateCommentRoute = createRoute({
   },
 });
 
+const reportCommentRoute = createRoute({
+  method: 'post',
+  path: '/comments/{id}/report',
+  tags: ['Comments'],
+  summary: 'Reportar comentario',
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: IdParamSchema,
+    body: { content: { 'application/json': { schema: ReportCommentSchema } } },
+  },
+  responses: {
+    200: {
+      description: 'Reporte registrado',
+      content: {
+        'application/json': {
+          schema: SuccessResponseSchema(
+            z
+              .object({
+                reportCount: z.number().int(),
+                autoHidden: z.boolean(),
+              })
+              .openapi('ReportCommentResult'),
+            'ReportCommentResponse',
+          ),
+        },
+      },
+    },
+    401: { description: 'No autenticado', content: apiErrorJson },
+    403: { description: 'Sin permiso o correo no institucional', content: apiErrorJson },
+    404: { description: 'Comentario no encontrado', content: apiErrorJson },
+    503: { description: 'Base de datos no disponible', content: apiErrorJson },
+  },
+});
+
 export function registerCommentsRoutes(app: OpenAPIHono<AppBindings>) {
   app.use('/posts/:postId/comments', requireDatabase);
+  app.use('/comments/:id/report', requireDatabase);
   app.use('/moderation/comments/:id', requireDatabase);
 
   app.openapi(listCommentsRoute, async (c) => {
@@ -126,5 +161,15 @@ export function registerCommentsRoutes(app: OpenAPIHono<AppBindings>) {
     const body = c.req.valid('json');
     const comment = await moderateComment(id, body);
     return ok(c, comment);
+  });
+
+  app.openapi(reportCommentRoute, async (c) => {
+    const user = getUser(c);
+    requirePermission(user.role, 'comment');
+    requireInstitutionalEmail(user.email);
+    const { id } = c.req.valid('param');
+    const body = c.req.valid('json');
+    const result = await reportComment(id, user.sub, body);
+    return ok(c, result);
   });
 }

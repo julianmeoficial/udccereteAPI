@@ -1,5 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import type { AppBindings } from '../../types.js';
+import { validationHook } from '../../middleware/validation.js';
+import { registerAuthRoutes } from './auth.js';
 import { registerAdminRoutes } from './admin/index.js';
 import { registerAiRoutes } from './ai.js';
 import { registerCalendarRoutes } from './calendar.js';
@@ -18,9 +20,10 @@ import { registerSearchRoutes } from './search.js';
 import { registerWellbeingRoutes } from './wellbeing.js';
 
 export function createV1Router() {
-  const v1 = new OpenAPIHono<AppBindings>();
+  const v1 = new OpenAPIHono<AppBindings>({ defaultHook: validationHook });
   registerHealthRoutes(v1);
   registerMetaRoutes(v1);
+  registerAuthRoutes(v1);
   registerMeRoutes(v1);
   registerPostsRoutes(v1);
   registerCommentsRoutes(v1);
